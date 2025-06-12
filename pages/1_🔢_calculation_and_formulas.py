@@ -1,7 +1,10 @@
 import streamlit as st
 
+st.set_page_config(page_title="Investment Calculator", layout="centered")
+
 st.title("📋 Investment Calculator")
 
+# Input Section
 col1, col2 = st.columns(2)
 with col1:
     price = st.number_input("Purchase Price ($)", value=500000, step=10000)
@@ -15,6 +18,7 @@ with col2:
     down_payment = st.number_input("Down Payment ($)", value=100000, step=5000)
     mortgage_annual = st.number_input("Annual Mortgage Payment ($)", value=0)
 
+# Calculate Metrics
 if st.button("📊 Calculate"):
     gross_monthly = units * rent_monthly
     gross_annual = gross_monthly * 12
@@ -25,21 +29,22 @@ if st.button("📊 Calculate"):
     grm = price / gross_annual if gross_annual else 0
 
     st.session_state.results = {
-    "price": price,
-    "units": units,
-    "rent_monthly": rent_monthly,
-    "gross_monthly": gross_monthly,  
-    "gross_annual": gross_annual,
-    "expenses_annual": expenses_annual,
-    "mortgage_annual": mortgage_annual,
-    "noi": noi,
-    "cap_rate": cap_rate,
-    "cashflow": annual_cash_flow,
-    "cash_on_cash": cash_on_cash,
-    "grm": grm
-}
+        "price": price,
+        "units": units,
+        "rent_monthly": rent_monthly,
+        "gross_monthly": gross_monthly,
+        "gross_annual": gross_annual,
+        "expenses_annual": expenses_annual,
+        "mortgage_annual": mortgage_annual,
+        "down_payment": down_payment,
+        "noi": noi,
+        "cap_rate": cap_rate,
+        "cashflow": annual_cash_flow,
+        "cash_on_cash": cash_on_cash,
+        "grm": grm
+    }
 
-
+# Results Display
 if "results" in st.session_state and st.session_state.results:
     r = st.session_state.results
 
@@ -54,12 +59,29 @@ if "results" in st.session_state and st.session_state.results:
     col5.metric("Cash-on-Cash", f"{r['cash_on_cash']:.2f}%")
     col6.metric("GRM", f"{r['grm']:.2f}")
 
+    # Formula Breakdown
     with st.expander("📘 Formula Breakdown"):
         st.markdown(f"""
-        - **Gross Monthly Income =** Units × Rent = {units} × ${rent_monthly} = ${r['gross_monthly']}
-        - **Gross Annual Income =** ${r['gross_monthly']} × 12 = ${r['gross_annual']}
-        - **NOI =** Gross Annual – Expenses = ${r['gross_annual']} – ${expenses_annual} = ${r['noi']}
-        - **Cap Rate =** (NOI ÷ Price) × 100 = ({r['noi']} ÷ {price}) × 100 = {r['cap_rate']:.2f}%
-        - **Cash-on-Cash =** (Annual Cash Flow ÷ Down Payment) × 100 = ({r['cashflow']} ÷ {down_payment}) × 100 = {r['cash_on_cash']:.2f}%
-        - **GRM =** Price ÷ Gross Annual Income = {price} ÷ {r['gross_annual']} = {r['grm']:.2f}
+        ### 💡 Calculation Details
+
+        - **Gross Monthly Income** = Units × Rent  
+          = {r['units']} × ${r['rent_monthly']:,.0f} = ${r['gross_monthly']:,.0f}
+
+        - **Gross Annual Income** = Gross Monthly Income × 12  
+          = ${r['gross_monthly']:,.0f} × 12 = ${r['gross_annual']:,.0f}
+
+        - **NOI (Net Operating Income)** = Gross Annual Income – Annual Expenses  
+          = ${r['gross_annual']:,.0f} – ${r['expenses_annual']:,.0f} = ${r['noi']:,.0f}
+
+        - **Cap Rate** = (NOI ÷ Purchase Price) × 100  
+          = (${r['noi']:,.0f} ÷ ${r['price']:,.0f}) × 100 = {r['cap_rate']:.2f}%
+
+        - **Annual Cash Flow** = NOI – Annual Mortgage Payment  
+          = ${r['noi']:,.0f} – ${r['mortgage_annual']:,.0f} = ${r['cashflow']:,.0f}
+
+        - **Cash-on-Cash Return** = (Annual Cash Flow ÷ Down Payment) × 100  
+          = (${r['cashflow']:,.0f} ÷ ${r['down_payment']:,.0f}) × 100 = {r['cash_on_cash']:.2f}%
+
+        - **GRM (Gross Rent Multiplier)** = Purchase Price ÷ Gross Annual Income  
+          = ${r['price']:,.0f} ÷ ${r['gross_annual']:,.0f} = {r['grm']:.2f}
         """)
