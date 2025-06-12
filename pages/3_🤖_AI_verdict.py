@@ -6,7 +6,7 @@ import re
 from dotenv import load_dotenv
 
 load_dotenv()
-client = Groq(api_key=os.environ["GROQ_API_KEY"])
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 st.title("🤖 AI Investment Verdict")
 
